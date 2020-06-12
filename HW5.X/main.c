@@ -1,8 +1,8 @@
 #include<xc.h>           // processor SFR definitions
 #include<sys/attribs.h>  // __ISR macro
 #define SPI__H__
-
-#include "ws2812b.c"
+#include<stdio.h>
+#include "ws2812b.h"
 
 #define IODIRA 0x00
 #define IODIRB 0x01
@@ -68,16 +68,47 @@ int main() {
     __builtin_enable_interrupts();
     //Intialize(write and read)
     //Send Start Bit
-    ws2812b_setup()
-    ws2812b_setColor(wsColor * c, int numLEDs)
-    HSBtoRGB(float hue, float sat, float brightness)
+    
     
    
     __builtin_enable_interrupts();
+    ws2812b_setup();
+    //Start Colors
+    wsColor clrs[4];
+    int Heff1 =0;
+    int Heff2 =60;
+    int Heff3 =120;
+    int Heff4 =180;
+    int Up =1;
     
-    //Heartbeat
-    _CP0_SET_COUNT(0);
-    while(_CP0_GET_COUNT()<48000000/24){
-        ;
+    while(1){
+        if(Heff1>=360){
+            Heff1=0;
+        }
+        else if(Heff2>=360){
+            Heff2=0;
+        }
+        else if(Heff3>=360){
+            Heff3=0;
+        }
+        else if(Heff4>=360){
+            Heff4=0;
+        }
+        clrs[0]=HSBtoRGB(Heff1,1,.5);
+        clrs[1]=HSBtoRGB(Heff2,1,.5);
+        clrs[2]=HSBtoRGB(Heff3,1,.5);
+        clrs[3]=HSBtoRGB(Heff4,1,.5);
+        
+        Heff1=Heff1+Up;
+        Heff2=Heff2+Up;
+        Heff3=Heff3+Up;
+        Heff4=Heff4+Up;
+         //Heartbeat
+        _CP0_SET_COUNT(0);
+        while(_CP0_GET_COUNT()<48000000/240){
+            ;
+        }   
+            
+        ws2812b_setColor(clrs,4);
     }
 }
